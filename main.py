@@ -1,4 +1,4 @@
-from interface.database.create_db import create_db
+from database.create_db import create_db
 from aiogram import executor
 from my_bot import dp
 

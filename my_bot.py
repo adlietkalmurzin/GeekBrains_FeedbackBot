@@ -1,6 +1,4 @@
- from aiogram import types
-
-import sqlite3
+from aiogram import types
 
 from aiogram.dispatcher import FSMContext
 from configs.bot_configs import bot, dp, main_menu_message
