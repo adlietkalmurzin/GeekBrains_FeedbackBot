@@ -110,7 +110,7 @@ def get_user(user_id):
     return cursor.fetchone()
 
 
-with open("output.xlsx", "wb") as f:
+with open("../output.xlsx", "wb") as f:
     f.write(get_table().getbuffer())
 # send_to_base('asdfsa', 'asdfsa', 'asdfsa', 'asdfsa', 'asdfsa', 1, 2, 1)
 # cursor.execute("SELECT * FROM feedback")
