@@ -6,8 +6,7 @@ import psycopg2
 import xlsxwriter as xs
 from PIL import Image
 
-from analytics.analytics import get_all_pn_plot, get_specifically_pn_plot, get_all_obj_all_rew_plot, \
-    plot_positive_or_negative_reviews_ratio
+from analytics.analytics import get_all_plots
 from database.config import host, user, db_name, password
 from database.create_db import create_db
 
@@ -80,16 +79,19 @@ def send_to_base(q1, q2, q3, q4, q5, is_relevant, object_, is_positive):
 def get_table():
     yes_no = {1: 'Да', 0: 'Нет'}
     obj = {0: 'вебинар', 1: 'программа', 2: 'преподаватель'}
+    cells = {0: 'A', 1: 'F'}
+    offset = {1: -80, 0: 0}
     header = ('Время', 'Вопрос 1', 'Вопрос 2', 'Вопрос 3', 'Вопрос 4', 'Вопрос 5', 'релевантен ли отзыв',
               'к кому направлен отзыв', 'позитивен ли отзыв')
     cursor.execute("SELECT * FROM feedback")
     xlsx = BytesIO()
     workbook = xs.Workbook(xlsx)
     worksheet = workbook.add_worksheet()
+    db_data = cursor.fetchall()
     for i, row in enumerate(header):
         worksheet.set_column(i, i, 20)
         worksheet.write(0, i, row)
-    for i, row in enumerate(cursor.fetchall()):
+    for i, row in enumerate(db_data):
         for j, data in enumerate(row):
             if j == 7:
                 worksheet.write(i + 1, j, obj[data])
@@ -99,43 +101,21 @@ def get_table():
                 worksheet.write(i + 1, j, str(data))
             else:
                 worksheet.write(i + 1, j, data)
-    worksheet.insert_image(f"A{i + 7}", 'plotik.png',
-                           {"image_data": crop_image(get_all_pn_plot()), "x_scale": 0.38, "y_scale": 0.5})
-    worksheet.insert_image(f"F{i + 7}", 'plotik.png',
-                           {"image_data": crop_image(get_all_pn_plot(True)), "x_scale": 0.38, "y_scale": 0.5,
-                            "x_offset": -80})
-    worksheet.insert_image(f"A{i + 7 + 28}", 'plotik.png',
-                           {"image_data": crop_image(get_specifically_pn_plot(0, )), "x_scale": 0.38,
-                            "y_scale": 0.5})
-    worksheet.insert_image(f"F{i + 7 + 28}", 'plotik.png',
-                           {"image_data": crop_image(get_specifically_pn_plot(0, True)), "x_scale": 0.38,
-                            "y_scale": 0.5,
-                            "x_offset": -80})
-    worksheet.insert_image(f"A{i + 7 + 28 * 2}", 'plotik.png',
-                           {"image_data": crop_image(get_specifically_pn_plot(1)), "x_scale": 0.38,
-                            "y_scale": 0.5})
-    worksheet.insert_image(f"F{i + 7 + 28 * 2}", 'plotik.png',
-                           {"image_data": crop_image(get_specifically_pn_plot(1, True)), "x_scale": 0.38,
-                            "y_scale": 0.5,
-                            "x_offset": -80})
-    worksheet.insert_image(f"A{i + 7 + 28 * 3}", 'plotik.png',
-                           {"image_data": crop_image(get_specifically_pn_plot(2)), "x_scale": 0.38, "y_scale": 0.5})
-    worksheet.insert_image(f"F{i + 7 + 28 * 3}", 'plotik.png',
-                           {"image_data": crop_image(get_specifically_pn_plot(2, True)), "x_scale": 0.38,
-                            "y_scale": 0.5,
-                            "x_offset": -80})
-    worksheet.insert_image(f"A{i + 7 + 28 * 4}", 'plotik.png',
-                           {"image_data": get_all_obj_all_rew_plot(), "x_scale": 0.38, "y_scale": 0.5})
-    worksheet.insert_image(f"F{i + 7 + 28 * 4}", 'plotik.png',
-                           {"image_data": get_all_obj_all_rew_plot(True), "x_scale": 0.38, "y_scale": 0.5})
-    worksheet.insert_image(f"A{i + 7 + 28 * 5}", 'plotik.png',
-                           {"image_data": plot_positive_or_negative_reviews_ratio(), "x_scale": 0.38, "y_scale": 0.5})
-    worksheet.insert_image(f"F{i + 7 + 28 * 5}", 'plotik.png',
-                           {"image_data": plot_positive_or_negative_reviews_ratio(True), "x_scale": 0.38,
-                            "y_scale": 0.5})
+    for k, plot in enumerate(get_all_plots(db_data)):
+        if k <= 7:
+            plot = crop_image(plot)
+        print(k)
+        worksheet.insert_image(f"{cells[k % 2]}{i + 7 + 28 * (k // 2)}", 'plot.png',
+                               {"image_data": plot, "x_scale": 0.38, "y_scale": 0.5, "x_offset": offset[k % 2]})
     workbook.close()
     xlsx.seek(0)
     return xlsx
+
+
+def get_plots():
+    cursor.execute("SELECT * FROM feedback")
+    data = cursor.fetchall()
+    return get_all_plots(data)
 
 
 def send_user_to_base(user_id, first_name, last_name, user_type):
