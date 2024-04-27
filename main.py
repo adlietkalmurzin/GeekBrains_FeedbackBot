@@ -5,7 +5,6 @@ from my_bot import dp
 
 async def main(dp) -> None:
     create_db()
-    bool(1)
 
 
 if __name__ == "__main__":
