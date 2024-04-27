@@ -3,10 +3,9 @@
 import sqlite3
 
 from aiogram.dispatcher import FSMContext
-from aiogram.types import ReplyKeyboardRemove
 from configs.bot_configs import bot, dp, main_menu_message
 from interface.students_feedback import leave_review
-from interface.teacher_lecture_analytics import get_analytics
+from interface.admin_get_analytics import get_analytics
 
 conn = sqlite3.connect(r'interface/database/students_feedback.db')
 cursor = conn.cursor()
@@ -41,7 +40,7 @@ async def get_report(message: types.Message):
 
 @dp.message_handler(text="👨‍🎓Я студент")
 async def admin(message: types.Message):
-    await main_menu_message(message, "👋Здравствуйте", 3)
+    await main_menu_message(message, "👋Здравствуйте", 0)
 
 
 @dp.message_handler(text="Оставить отзыв")

@@ -44,7 +44,7 @@ async def handle_evaluation(message: types.Message, state: FSMContext):
     if message.text == "🏠Вернуться в главное меню":
         await state.finish()
         await main_menu_message(message, "Вы вернулись в главное меню\n"
-                                         "Заполнение формы отменено", 3)
+                                         "Заполнение формы отменено", 0)
     else:
         try:
             readiness = int(message.text)
@@ -63,7 +63,7 @@ async def get_question1(message: types.Message, state: FSMContext):
     if message.text == "🏠Вернуться в главное меню":
         await state.finish()
         await main_menu_message(message, "Вы вернулись в главное меню\n"
-                                         "Заполнение отзыва отменено", 3)
+                                         "Заполнение отзыва отменено", 0)
     else:
         question1_answer = message.text
         await message.answer("Что вам больше всего понравилось в теме вебинара и почему?")
@@ -76,7 +76,7 @@ async def get_question2(message: types.Message, state: FSMContext):
     if message.text == "🏠Вернуться в главное меню":
         await state.finish()
         await main_menu_message(message, "Вы вернулись в главное меню\n"
-                                         "Заполнение отзыва отменено", 3)
+                                         "Заполнение отзыва отменено", 0)
     else:
         question2_answer = message.text
         await message.answer(
@@ -90,7 +90,7 @@ async def get_question3(message: types.Message, state: FSMContext):
     if message.text == "🏠Вернуться в главное меню":
         await state.finish()
         await main_menu_message(message, "Вы вернулись в главное меню\n"
-                                         "Заполнение отзыва отменено", 3)
+                                         "Заполнение отзыва отменено", 0)
     else:
         question3_answer = message.text
         await message.answer(
@@ -104,7 +104,7 @@ async def get_question4(message: types.Message, state: FSMContext):
     if message.text == "🏠Вернуться в главное меню":
         await state.finish()
         await main_menu_message(message, "Вы вернулись в главное меню\n"
-                                         "Заполнение отзыва отменено", 3)
+                                         "Заполнение отзыва отменено", 0)
     else:
         question4_answer = message.text
         await message.answer(
@@ -118,7 +118,7 @@ async def get_question5(message: types.Message, state: FSMContext):
     if message.text == "🏠Вернуться в главное меню":
         await state.finish()
         await main_menu_message(message, "Вы вернулись в главное меню\n"
-                                         "Заполнение отзыва отменено", 3)
+                                         "Заполнение отзыва отменено", 0)
     else:
         readiness = (await state.get_data()).get('readiness')
         question1_answer = (await state.get_data()).get('question1')
@@ -155,7 +155,7 @@ async def get_question5(message: types.Message, state: FSMContext):
 @dp.callback_query_handler(text="main_menu")
 async def main_menu(call: types.CallbackQuery):
     await call.message.delete()
-    await main_menu_message(call, "Отзыв НЕ сохранён. Вы в главном меню\n", 3)
+    await main_menu_message(call, "Отзыв НЕ сохранён. Вы в главном меню\n", 0)
 
 
 @dp.callback_query_handler(text="send_feedback")
@@ -174,7 +174,7 @@ async def send_feedback(call: types.CallbackQuery, state: FSMContext):
     send_to_base(question1_answer, question2_answer, question3_answer, question4_answer, question5_answer, is_relevant, object_, is_positive)
 
     await call.message.delete()
-    await main_menu_message(call, "Отзыв сохранён. Вы в главном меню\n", 3)
+    await main_menu_message(call, "Отзыв сохранён. Вы в главном меню\n", 0)
 
 
 @dp.callback_query_handler(text="fill_feedback")

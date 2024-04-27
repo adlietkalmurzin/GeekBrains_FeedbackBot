@@ -46,6 +46,7 @@ async def admin_su(message: types.Message, state: FSMContext):
             '❌<b>Фамилия или имя введены неверно.</b> Пример корректных данных: <b>Иванов Иван</b>')
     else:
         first_name, last_name = message.text.split()
+        add_new_user(message.from_user.id, first_name, last_name)
 
         await main_menu_message(message, f'👋Здравствуйте, {first_name} {last_name},\n Вы успешно зарегистрировались', 1)
         await state.finish()
