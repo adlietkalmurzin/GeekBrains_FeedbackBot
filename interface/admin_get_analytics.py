@@ -26,6 +26,7 @@ async def send_analytics(call: types.CallbackQuery):
 @dp.callback_query_handler(text="get_graph")
 async def send_graphs(call: types.CallbackQuery):
     docs = types.MediaGroup()
+    docs_1 = types.MediaGroup()
     all_pl = types.InputFile(get_all_pn_plot(), 'Отзывы от времени.png')
     all_pl_percent = types.InputFile(get_all_pn_plot(True), 'Отзывы от времени по процентам.png')
     obj_0 = types.InputFile(get_specifically_pn_plot(0), 'Положительные и отрицательные. Вебинар.png')
@@ -51,7 +52,10 @@ async def send_graphs(call: types.CallbackQuery):
     docs.attach_document(obj_2_percent)
     docs.attach_document(all_rew)
     docs.attach_document(all_rew_percent)
-    return await bot.send_media_group(call.message.chat.id, media=docs)
+    docs_1.attach_document(ratio)
+    docs_1.attach_document(ratio_percent)
+    await bot.send_media_group(call.message.chat.id, media=docs)
+    return await bot.send_media_group(call.message.chat.id, media=docs_1)
 
 
 @dp.callback_query_handler(text="back_after_get_table_main_menu")
