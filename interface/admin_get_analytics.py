@@ -1,4 +1,4 @@
-import sqlite3
+import datetime
 
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
@@ -9,6 +9,7 @@ from configs.bot_configs import bot, main_menu_message, dp
 from configs.models.checking_for_information.checking_for_information import is_informative
 from configs.models.assessment_emotionality.assessment_emotionality import assessment_emotionality
 from configs.models.identify_object.identify_object import identify_object
+from database.db_session import get_table
 
 
 async def get_analytics(message: types.Message):
@@ -20,4 +21,4 @@ async def get_analytics(message: types.Message):
 
 async def send_analytics(message: types.Message):
     doc = types.InputFile(get_table(), f'{datetime.datetime.now().date()} отчет.xlsx')
-    return await bot.send_document(call.message.chat.id, doc)
+    return await bot.send_document(message.chat.id, doc)
