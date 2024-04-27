@@ -104,7 +104,6 @@ def get_table():
     for k, plot in enumerate(get_all_plots(db_data)):
         if k <= 7:
             plot = crop_image(plot)
-        print(k)
         worksheet.insert_image(f"{cells[k % 2]}{i + 7 + 28 * (k // 2)}", 'plot.png',
                                {"image_data": plot, "x_scale": 0.38, "y_scale": 0.5, "x_offset": offset[k % 2]})
     workbook.close()

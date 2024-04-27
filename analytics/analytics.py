@@ -19,12 +19,12 @@ def get_all_plots(data):
     res = (get_all_pn_plot(df), get_all_pn_plot(df, True),
            get_specifically_pn_plot(df, 0), get_specifically_pn_plot(df, 0, True),
            get_specifically_pn_plot(df, 1), get_specifically_pn_plot(df, 1, True),
-           get_specifically_pn_plot(df, 2), get_specifically_pn_plot(df, 2, True),
-           get_all_obj_all_rew_plot(df, 0), get_all_obj_all_rew_plot(df, 0, True),
-           get_all_obj_all_rew_plot(df, 1), get_all_obj_all_rew_plot(df, 1, True)
+           get_specifically_pn_plot(df, 2), get_specifically_pn_plot(df, 2, True)
            )
     try:
-        res = res + (plot_positive_or_negative_reviews_ratio(df), plot_positive_or_negative_reviews_ratio(df, True))
+        res = res.__add__((get_all_obj_all_rew_plot(df, 0), get_all_obj_all_rew_plot(df, 0, True),
+                           get_all_obj_all_rew_plot(df, 1), get_all_obj_all_rew_plot(df, 1, True),
+                           get_all_obj_all_rew_plot(df, 2), get_all_obj_all_rew_plot(df, 2, True)))
     except:
         return res
     return res
@@ -156,32 +156,6 @@ def get_all_obj_all_rew_plot(df, rew_type: int, in_percent: bool = False):
 
     # Отображаем график
     plt.tight_layout()
-    buf = BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
-    return buf
-
-
-def plot_positive_or_negative_reviews_ratio(df, in_percent: bool = False):
-    plt.figure(figsize=(20, 12))
-    reviews_counts = df[df['is_relevant'] == 1].groupby(['timestamp', 'object']).size().unstack(fill_value=0)
-    total_reviews = reviews_counts.sum(axis=1)
-    reviews_percentages = reviews_counts.div(total_reviews, axis=0) * 100
-
-    if in_percent:
-        plt.bar(reviews_percentages.index, reviews_percentages[0], color='#172d5c', label='Вебинары')
-        plt.bar(reviews_percentages.index, reviews_percentages[1], bottom=reviews_percentages[0], color='#c33d72',
-                label='Материал')
-        plt.bar(reviews_percentages.index, reviews_percentages[2],
-                bottom=reviews_percentages[0] + reviews_percentages[1], color='#ffa600', label='Преподаватели')
-
-    else:
-        plt.bar(reviews_counts.index, reviews_counts[0], color='#172d5c', label='Вебинары')
-        plt.bar(reviews_counts.index, reviews_counts[1], bottom=reviews_counts[0], color='#c33d72', label='Материал')
-        plt.bar(reviews_counts.index, reviews_counts[2], bottom=reviews_counts[0] + reviews_counts[1], color='#ffa600',
-                label='Преподаватели')
-    plt.xticks(rotation=45)
-
     buf = BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)
