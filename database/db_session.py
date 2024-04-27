@@ -111,10 +111,3 @@ def get_user(user_id):
     if result is None:
         return None
     return result[1:]
-
-
-with open("../output.xlsx", "wb") as f:
-    f.write(get_table().getbuffer())
-# send_to_base('asdfsa', 'asdfsa', 'asdfsa', 'asdfsa', 'asdfsa', 1, 2, 1)
-# cursor.execute("SELECT * FROM feedback")
-# print(str(cursor.fetchall()[0][0]))
