@@ -16,3 +16,8 @@ async def get_analytics(message: types.Message):
     menu.add("🏠Вернуться в главное меню")
     menu.add("Выгрузить таблицу")
     await message.answer("📊Получить аналитику", reply_markup=back_menu)
+
+
+async def send_analytics(message: types.Message):
+    doc = types.InputFile(get_table(), f'{datetime.datetime.now().date()} отчет.xlsx')
+    return await bot.send_document(call.message.chat.id, doc)
