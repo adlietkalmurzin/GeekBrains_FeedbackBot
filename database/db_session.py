@@ -99,38 +99,38 @@ def get_table():
                 worksheet.write(i + 1, j, str(data))
             else:
                 worksheet.write(i + 1, j, data)
-    worksheet.insert_image("A10", 'plotik.png',
+    worksheet.insert_image(f"A{i + 7}", 'plotik.png',
                            {"image_data": crop_image(get_all_pn_plot()), "x_scale": 0.38, "y_scale": 0.5})
-    worksheet.insert_image("F10", 'plotik.png',
+    worksheet.insert_image(f"F{i + 7}", 'plotik.png',
                            {"image_data": crop_image(get_all_pn_plot(True)), "x_scale": 0.38, "y_scale": 0.5,
                             "x_offset": -80})
-    worksheet.insert_image("A38", 'plotik.png',
+    worksheet.insert_image(f"A{i + 7 + 28}", 'plotik.png',
                            {"image_data": crop_image(get_specifically_pn_plot(0, )), "x_scale": 0.38,
                             "y_scale": 0.5})
-    worksheet.insert_image("F38", 'plotik.png',
+    worksheet.insert_image(f"F{i + 7 + 28}", 'plotik.png',
                            {"image_data": crop_image(get_specifically_pn_plot(0, True)), "x_scale": 0.38,
                             "y_scale": 0.5,
                             "x_offset": -80})
-    worksheet.insert_image("A66", 'plotik.png',
+    worksheet.insert_image(f"A{i + 7 + 28 * 2}", 'plotik.png',
                            {"image_data": crop_image(get_specifically_pn_plot(1)), "x_scale": 0.38,
                             "y_scale": 0.5})
-    worksheet.insert_image("F66", 'plotik.png',
+    worksheet.insert_image(f"F{i + 7 + 28 * 2}", 'plotik.png',
                            {"image_data": crop_image(get_specifically_pn_plot(1, True)), "x_scale": 0.38,
                             "y_scale": 0.5,
                             "x_offset": -80})
-    worksheet.insert_image("A94", 'plotik.png',
+    worksheet.insert_image(f"A{i + 7 + 28 * 3}", 'plotik.png',
                            {"image_data": crop_image(get_specifically_pn_plot(2)), "x_scale": 0.38, "y_scale": 0.5})
-    worksheet.insert_image("F94", 'plotik.png',
+    worksheet.insert_image(f"F{i + 7 + 28 * 3}", 'plotik.png',
                            {"image_data": crop_image(get_specifically_pn_plot(2, True)), "x_scale": 0.38,
                             "y_scale": 0.5,
                             "x_offset": -80})
-    worksheet.insert_image("A122", 'plotik.png',
+    worksheet.insert_image(f"A{i + 7 + 28 * 4}", 'plotik.png',
                            {"image_data": get_all_obj_all_rew_plot(), "x_scale": 0.38, "y_scale": 0.5})
-    worksheet.insert_image("F122", 'plotik.png',
+    worksheet.insert_image(f"F{i + 7 + 28 * 4}", 'plotik.png',
                            {"image_data": get_all_obj_all_rew_plot(True), "x_scale": 0.38, "y_scale": 0.5})
-    worksheet.insert_image("A150", 'plotik.png',
+    worksheet.insert_image(f"A{i + 7 + 28 * 5}", 'plotik.png',
                            {"image_data": plot_positive_or_negative_reviews_ratio(), "x_scale": 0.38, "y_scale": 0.5})
-    worksheet.insert_image("F150", 'plotik.png',
+    worksheet.insert_image(f"F{i + 7 + 28 * 5}", 'plotik.png',
                            {"image_data": plot_positive_or_negative_reviews_ratio(True), "x_scale": 0.38,
                             "y_scale": 0.5})
     workbook.close()
@@ -166,5 +166,3 @@ def crop_image(image_bytes, new_size=(1700, 1100)):
     img_byte_arr = BytesIO()
     cropped_img.save(img_byte_arr, format='PNG')
     return img_byte_arr
-
-
