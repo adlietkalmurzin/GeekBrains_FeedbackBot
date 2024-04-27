@@ -1,11 +1,15 @@
 import datetime
+from datetime import timezone
+from io import BytesIO
 
 import psycopg2
+import xlsxwriter as xs
+from PIL import Image
+
+from analytics.analytics import get_all_pn_plot, get_specifically_pn_plot, get_all_obj_all_rew_plot, \
+    plot_positive_or_negative_reviews_ratio
 from database.config import host, user, db_name, password
 from database.create_db import create_db
-from datetime import timezone
-import xlsxwriter as xs
-from io import BytesIO
 
 create_db()
 
@@ -95,7 +99,40 @@ def get_table():
                 worksheet.write(i + 1, j, str(data))
             else:
                 worksheet.write(i + 1, j, data)
-
+    worksheet.insert_image("A10", 'plotik.png',
+                           {"image_data": crop_image(get_all_pn_plot()), "x_scale": 0.38, "y_scale": 0.5})
+    worksheet.insert_image("F10", 'plotik.png',
+                           {"image_data": crop_image(get_all_pn_plot(True)), "x_scale": 0.38, "y_scale": 0.5,
+                            "x_offset": -80})
+    worksheet.insert_image("A38", 'plotik.png',
+                           {"image_data": crop_image(get_specifically_pn_plot(0, )), "x_scale": 0.38,
+                            "y_scale": 0.5})
+    worksheet.insert_image("F38", 'plotik.png',
+                           {"image_data": crop_image(get_specifically_pn_plot(0, True)), "x_scale": 0.38,
+                            "y_scale": 0.5,
+                            "x_offset": -80})
+    worksheet.insert_image("A66", 'plotik.png',
+                           {"image_data": crop_image(get_specifically_pn_plot(1)), "x_scale": 0.38,
+                            "y_scale": 0.5})
+    worksheet.insert_image("F66", 'plotik.png',
+                           {"image_data": crop_image(get_specifically_pn_plot(1, True)), "x_scale": 0.38,
+                            "y_scale": 0.5,
+                            "x_offset": -80})
+    worksheet.insert_image("A94", 'plotik.png',
+                           {"image_data": crop_image(get_specifically_pn_plot(2)), "x_scale": 0.38, "y_scale": 0.5})
+    worksheet.insert_image("F94", 'plotik.png',
+                           {"image_data": crop_image(get_specifically_pn_plot(2, True)), "x_scale": 0.38,
+                            "y_scale": 0.5,
+                            "x_offset": -80})
+    worksheet.insert_image("A122", 'plotik.png',
+                           {"image_data": get_all_obj_all_rew_plot(), "x_scale": 0.38, "y_scale": 0.5})
+    worksheet.insert_image("F122", 'plotik.png',
+                           {"image_data": get_all_obj_all_rew_plot(True), "x_scale": 0.38, "y_scale": 0.5})
+    worksheet.insert_image("A150", 'plotik.png',
+                           {"image_data": plot_positive_or_negative_reviews_ratio(), "x_scale": 0.38, "y_scale": 0.5})
+    worksheet.insert_image("F150", 'plotik.png',
+                           {"image_data": plot_positive_or_negative_reviews_ratio(True), "x_scale": 0.38,
+                            "y_scale": 0.5})
     workbook.close()
     xlsx.seek(0)
     return xlsx
@@ -111,3 +148,23 @@ def get_user(user_id):
     if result is None:
         return None
     return result[1:]
+
+
+def crop_image(image_bytes, new_size=(1700, 1100)):
+    img = Image.open(image_bytes)
+
+    if new_size is None:
+        new_size = (img.width, img.height)
+
+    left = (img.width - new_size[0]) // 2
+    top = (img.height - new_size[1]) // 2
+    right = (img.width + new_size[0]) // 2
+    bottom = (img.height + new_size[1]) // 2
+
+    cropped_img = img.crop((left, top, right, bottom))
+
+    img_byte_arr = BytesIO()
+    cropped_img.save(img_byte_arr, format='PNG')
+    return img_byte_arr
+
+
