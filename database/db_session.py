@@ -107,7 +107,10 @@ def send_user_to_base(user_id, first_name, last_name, user_type):
 
 def get_user(user_id):
     cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
-    return cursor.fetchone()[1:]
+    result = cursor.fetchone()
+    if result is None:
+        return None
+    return result[1:]
 
 
 with open("../output.xlsx", "wb") as f:

@@ -13,12 +13,20 @@ from database.db_session import get_table
 
 
 async def get_analytics(message: types.Message):
-    menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    menu.add("🏠Вернуться в главное меню")
-    menu.add("Выгрузить таблицу")
-    await message.answer("📊Получить аналитику", reply_markup=back_menu)
+    table_send_menu = types.InlineKeyboardMarkup(resize_keyboard=True)
+    table_send_menu.add(types.InlineKeyboardButton("Выгрузить таблицу", callback_data="get_table"))
+    table_send_menu.add(
+        types.InlineKeyboardButton("🏠Вернуться в главное меню", callback_data="back_after_get_table_main_menu"))
+    await message.answer("Чтобы получить таблицу с аналитикой, нажмите кнопку ниже", reply_markup=table_send_menu)
 
 
-async def send_analytics(message: types.Message):
+@dp.callback_query_handler(text="get_table")
+async def send_analytics(call: types.CallbackQuery):
     doc = types.InputFile(get_table(), f'{datetime.datetime.now().date()} отчет.xlsx')
-    return await bot.send_document(message.chat.id, doc)
+    return await bot.send_document(call.message.chat.id, doc)
+
+
+@dp.callback_query_handler(text="back_after_get_table_main_menu")
+async def back_after_get_table_main_menu(call: types.CallbackQuery):
+    await call.message.delete()
+    await main_menu_message(call, "Вы вернулись в главное меню", 1)
