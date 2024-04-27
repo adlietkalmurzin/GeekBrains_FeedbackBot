@@ -44,7 +44,7 @@ cursor.execute(
 )
 cursor.execute(
     """CREATE TABLE IF NOT EXISTS users(
-        user_id INTEGER,
+        user_id BIGINT,
         first_name TEXT,
         last_name TEXT,
         user_type INTEGER);"""

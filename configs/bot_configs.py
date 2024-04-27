@@ -18,14 +18,16 @@ async def main_menu_message(message, message_text: str, user_type: int):
     :param message_text: текст сообщения
     :param user_type: 0 - студент, 1 - админ
     """
+    if isinstance(message, types.CallbackQuery):
+        message = message.message
 
     if user_type == 0:
         main_students_menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
         buttons = ["Оставить отзыв"]
         main_students_menu.add(*buttons)
-        await bot.send_message(message.from_user.id, message_text, reply_markup=main_students_menu)
+        await bot.send_message(message.chat.id, message_text, reply_markup=main_students_menu)
     elif user_type == 1:
         main_teachers_menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
         buttons = ["📊Получить аналитику"]
         main_teachers_menu.add(*buttons)
-        await bot.send_message(message.from_user.id, message_text, reply_markup=main_teachers_menu)
+        await bot.send_message(message.chat.id, message_text, reply_markup=main_teachers_menu)

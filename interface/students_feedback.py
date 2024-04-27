@@ -2,14 +2,21 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram import types
 
-from configs.bot_configs import bot, main_menu_message, dp
+from configs.bot_configs import bot, main_menu_message, dp, READYNESS_THRESHOLD, RELEVANT_SCORE_THRESHOLD
 
 from configs.models.checking_for_information.checking_for_information import is_informative
 from configs.models.assessment_emotionality.assessment_emotionality import assessment_emotionality
 from configs.models.identify_object.identify_object import identify_object
 from database.db_session import send_to_base
-temporarily_dict = {}
-temporarily_dict_feedback = {}
+
+
+coef = {
+    'question1': 1,
+    'question2': 1,
+    'question3': 1,
+    'question4': 1,
+    'question5': 1
+}
 
 
 class Feedback(StatesGroup):
@@ -144,11 +151,11 @@ async def get_question5(message: types.Message, state: FSMContext):
                 keyboard.add(types.InlineKeyboardButton(text="Заполнить отзыв заново", callback_data="fill_feedback"))
                 keyboard.add(types.InlineKeyboardButton(text="Вернуться в главное меню", callback_data="main_menu"))
                 await message.answer('Ваш отзыв неинформативен', reply_markup=keyboard)
-                await state.finish()
+        await state.finish()
 
 
 @dp.callback_query_handler(text="main_menu")
-async def main_menu(call: types.CallbackQuery):
+async def main_menu(call: types.CallbackQuery, state: FSMContext):
     await call.message.delete()
     await main_menu_message(call, "Отзыв НЕ сохранён. Вы в главном меню\n", 0)
 
