@@ -12,14 +12,14 @@ admin_password = "1234"
 
 
 async def main_menu_message(message, message_text: str, user_type: int):
-    '''
+    """
     Отправляет главное меню
     :param message: сообщение от пользователя
     :param message_text: текст сообщения
     :param user_type: 0 - студент, 1 - админ
-    '''
+    """
+
     if user_type == 0:
-        await bot.send_message(message.from_user.id, message_text, reply_markup=main_teachers_menu)
         main_students_menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
         buttons = ["Оставить отзыв"]
         main_students_menu.add(*buttons)
@@ -28,3 +28,4 @@ async def main_menu_message(message, message_text: str, user_type: int):
         main_teachers_menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
         buttons = ["📊Получить аналитику"]
         main_teachers_menu.add(*buttons)
+        await bot.send_message(message.from_user.id, message_text, reply_markup=main_teachers_menu)

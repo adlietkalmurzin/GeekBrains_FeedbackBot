@@ -7,7 +7,7 @@ from configs.bot_configs import bot, main_menu_message, dp
 from configs.models.checking_for_information.checking_for_information import is_informative
 from configs.models.assessment_emotionality.assessment_emotionality import assessment_emotionality
 from configs.models.identify_object.identify_object import identify_object
-
+from database.db_session import send_to_base
 temporarily_dict = {}
 temporarily_dict_feedback = {}
 

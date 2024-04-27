@@ -6,6 +6,7 @@ from aiogram import types
 from aiogram.types import ReplyKeyboardRemove
 
 from configs.bot_configs import dp, main_menu_message, admin_password
+from database.db_session import send_user_to_base
 
 
 class SignUpAdmin(StatesGroup):
@@ -46,28 +47,25 @@ async def admin_su(message: types.Message, state: FSMContext):
             '❌<b>Фамилия или имя введены неверно.</b> Пример корректных данных: <b>Иванов Иван</b>')
     else:
         first_name, last_name = message.text.split()
-        add_new_user(message.from_user.id, first_name, last_name)
+        send_user_to_base(message.from_user.id, first_name, last_name, 1)
 
         await main_menu_message(message, f'👋Здравствуйте, {first_name} {last_name},\n Вы успешно зарегистрировались', 1)
         await state.finish()
 
 
 async def sign_up_student(message: types.Message, state: FSMContext):
-    await message.answer('👤Введите вашу <b>Фамилию, Имя, Учебное учреждение и группу</b> через пробел\n'
-                         'Пример корректных данных: <b>Иванов Иван МФТИ 43</b>', reply_markup=ReplyKeyboardRemove())
-    await state.set_state(SignUpStudent.name_and_institution)
+    await message.answer('👤Введите вашу <b>Фамилию и Имя</b> через пробел\n'
+                         'Пример корректных данных: <b>Иванов Иван</b>', reply_markup=ReplyKeyboardRemove())
+    await state.set_state(SignUpStudent.name)
 
 
-@dp.message_handler(state=SignUpStudent.name_and_institution)
+@dp.message_handler(state=SignUpStudent.name)
 async def student_su(message: types.Message, state: FSMContext):
-    if len(message.text.split()) != 4:
+    if len(message.text.split()) != 2:
         await message.answer(
-            '❌<b>Фамилия, имя, учебное учреждение или группа введены неверно.</b> Пример корректных данных: <b>Иванов Иван МФТИ 43</b>')
+            '❌<b>Фамилия или имя введены неверно.</b> Пример корректных данных: <b>Иванов Иван</b>')
     else:
-        first_name, last_name, educational_institution, group_name = message.text.split()
-        cursor.execute(
-            "INSERT INTO students (user_id, first_name, last_name, educational_institution, group_name) VALUES (?, ?, ?, ?, ?)",
-            (message.chat.id, first_name, last_name, educational_institution, group_name))
-        conn.commit()
+        first_name, last_name = message.text.split()
+        send_user_to_base(message.from_user.id, first_name, last_name)
         await main_menu_message(message, f'👏Здравствуйте, {first_name} {last_name},\n Вы успешно зарегистрировались', 0)
         await state.finish()

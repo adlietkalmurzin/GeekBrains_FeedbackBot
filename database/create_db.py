@@ -1,8 +1,8 @@
 import psycopg2
-from config import host, user, db_name, password
+from database.config import host, user, db_name, password
 
 
-def create():
+def create_db():
     try:
         connection = psycopg2.connect(
             host=host,

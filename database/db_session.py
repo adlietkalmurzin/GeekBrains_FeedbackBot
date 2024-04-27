@@ -1,13 +1,13 @@
 import datetime
 
 import psycopg2
-from config import host, user, db_name, password
-from create_db import create
+from database.config import host, user, db_name, password
+from database.create_db import create_db
 from datetime import timezone
 import xlsxwriter as xs
 from io import BytesIO
 
-create()
+create_db()
 
 conn = psycopg2.connect(
     host=host,
@@ -107,7 +107,7 @@ def send_user_to_base(user_id, first_name, last_name, user_type):
 
 def get_user(user_id):
     cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
-    return cursor.fetchone()
+    return cursor.fetchone()[1:]
 
 
 with open("../output.xlsx", "wb") as f:
