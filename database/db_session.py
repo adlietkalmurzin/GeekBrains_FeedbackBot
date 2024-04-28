@@ -83,7 +83,7 @@ def get_table():
     offset = {1: -80, 0: 0}
     header = ('Время', 'Вопрос 1', 'Вопрос 2', 'Вопрос 3', 'Вопрос 4', 'Вопрос 5', 'релевантен ли отзыв',
               'к кому направлен отзыв', 'позитивен ли отзыв')
-    cursor.execute("SELECT * FROM feedback")
+    cursor.execute("SELECT * FROM feedback ORDER BY feedback.time")
     xlsx = BytesIO()
     workbook = xs.Workbook(xlsx)
     worksheet = workbook.add_worksheet()
@@ -104,15 +104,18 @@ def get_table():
     for k, plot in enumerate(get_all_plots(db_data)):
         if k <= 7:
             plot = crop_image(plot)
-        worksheet.insert_image(f"{cells[k % 2]}{i + 7 + 28 * (k // 2)}", 'plot.png',
-                               {"image_data": plot, "x_scale": 0.38, "y_scale": 0.5, "x_offset": offset[k % 2]})
+            worksheet.insert_image(f"{cells[k % 2]}{i + 7 + 28 * (k // 2)}", 'plot.png',
+                                   {"image_data": plot, "x_scale": 0.38, "y_scale": 0.5, "x_offset": offset[k % 2]})
+        else:
+            worksheet.insert_image(f"{cells[k % 2]}{i + 7 + 28 * (k // 2)}", 'plot.png',
+                                   {"image_data": plot, "x_scale": 0.38, "y_scale": 0.5})
     workbook.close()
     xlsx.seek(0)
     return xlsx
 
 
 def get_plots():
-    cursor.execute("SELECT * FROM feedback")
+    cursor.execute("SELECT * FROM feedback ORDER BY feedback.time")
     data = cursor.fetchall()
     return get_all_plots(data)
 
