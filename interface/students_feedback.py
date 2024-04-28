@@ -135,7 +135,7 @@ async def get_question5(message: types.Message, state: FSMContext):
             'Есть ли темы или вопросы, которые вы бы хотели изучить более подробно в следующих занятиях?']
         is_relevant = is_informative([question1_answer +' ' +question1_answer+' '+q[0], question1_answer +' ' +question2_answer+' '+q[1], question1_answer +' ' +question3_answer+' '+q[2],
                                         question1_answer +' ' +question4_answer+' '+q[3], question1_answer +' ' +question5_answer+' '+q[4]])
-        object_ = identify_object([question2_answer, question3_answer, question4_answer, question5_answer])
+        object_ = identify_object([question2_answer, question3_answer, question4_answer, question5_answer, question4_answer, question5_answer,])
         is_positive = assessment_emotionality(final_feedback)
         relevant = 1 if is_relevant[1] > 2.5 else 0
   
