@@ -129,29 +129,31 @@ async def get_question5(message: types.Message, state: FSMContext):
         question4_answer = (await state.get_data()).get('question4')
         question5_answer = message.text
         final_feedback = f'{question1_answer} {question2_answer} {question3_answer} {question4_answer} {question5_answer}'
-
-        relevant_score = is_informative(question2_answer) * coef['question2'] + is_informative(question3_answer) * coef['question3'] + is_informative(question4_answer) * coef['question4'] + is_informative(question5_answer) * coef['question5']
-        object_ = identify_object(final_feedback)
+        q = ['О каком вебинаре Вы хотите рассказать?', 'Что вам больше всего понравилось в теме вебинара и почему?',
+            'Были ли моменты в вебинаре, которые вызвали затруднения в понимании материала? Можете описать их?', 
+            'Какие аспекты вебинара, по вашему мнению, нуждаются в улучшении и какие конкретные изменения вы бы предложили?',
+            'Есть ли темы или вопросы, которые вы бы хотели изучить более подробно в следующих занятиях?']
+        is_relevant = is_informative([question1_answer +' ' +question1_answer+' '+q[0], question1_answer +' ' +question2_answer+' '+q[1], question1_answer +' ' +question3_answer+' '+q[2],
+                                        question1_answer +' ' +question4_answer+' '+q[3], question1_answer +' ' +question5_answer+' '+q[4]])
+        object_ = identify_object([question2_answer, question3_answer, question4_answer, question5_answer])
         is_positive = assessment_emotionality(final_feedback)
-
-        if int(readiness) >= READYNESS_THRESHOLD or relevant_score >= RELEVANT_SCORE_THRESHOLD:
-            is_relevant = is_informative(final_feedback)
-            send_to_base(question1_answer, question2_answer, question3_answer, question4_answer, question5_answer, is_relevant, object_, is_positive)
-
-            if is_relevant:
-                keyboard = types.InlineKeyboardMarkup()
-                keyboard.add(types.InlineKeyboardButton(text="Нет. Удалить отзыв и вернуться в главное меню",
-                                                        callback_data="main_menu"))
-                keyboard.add(types.InlineKeyboardButton(text="Да. Отправить отзыв", callback_data="send_feedback"))
-                final_final_feedback = 'Итоговый отзыв:\n\n' + f'{question1_answer}\n\n{question2_answer}\n\n{question3_answer}\n\n{question4_answer}\n\n{question5_answer}\n\nВсё верно?'
-                await message.answer(final_final_feedback, reply_markup=keyboard)
-                await state.update_data(question5=question5_answer, is_relevant=is_relevant, object_=object_, is_positive=is_positive)
-            else:
-                keyboard = types.InlineKeyboardMarkup()
-                keyboard.add(types.InlineKeyboardButton(text="Заполнить отзыв заново", callback_data="fill_feedback"))
-                keyboard.add(types.InlineKeyboardButton(text="Вернуться в главное меню", callback_data="main_menu"))
-                await message.answer('Ваш отзыв неинформативен', reply_markup=keyboard)
-        await state.finish()
+        relevant = 1 if is_relevant[1] > 2.5 else 0
+  
+        
+        if (relevant and readiness>READYNESS_THRESHOLD) or (is_relevant[1]>RELEVANT_SCORE_THRESHOLD and readiness<=READYNESS_THRESHOLD):
+            send_to_base(question1_answer, question2_answer, question3_answer, question4_answer, question5_answer, 1, object_, is_positive)
+            keyboard = types.InlineKeyboardMarkup()
+            keyboard.add(types.InlineKeyboardButton(text="Нет. Удалить отзыв и вернуться в главное меню",
+                                                    callback_data="main_menu"))
+            keyboard.add(types.InlineKeyboardButton(text="Да. Отправить отзыв", callback_data="send_feedback"))
+            final_final_feedback = 'Итоговый отзыв:\n\n' + f'{question1_answer}\n\n{question2_answer}\n\n{question3_answer}\n\n{question4_answer}\n\n{question5_answer}\n\nВсё верно?'
+            await message.answer(final_final_feedback, reply_markup=keyboard)
+            await state.update_data(question5=question5_answer, is_relevant=relevant, object_=object_, is_positive=is_positive)
+        else:
+            keyboard = types.InlineKeyboardMarkup()
+            keyboard.add(types.InlineKeyboardButton(text="Заполнить отзыв заново", callback_data="fill_feedback"))
+            keyboard.add(types.InlineKeyboardButton(text="Вернуться в главное меню", callback_data="main_menu"))
+            await message.answer('Ваш отзыв неинформативен', reply_markup=keyboard)
 
 
 @dp.callback_query_handler(text="main_menu")
