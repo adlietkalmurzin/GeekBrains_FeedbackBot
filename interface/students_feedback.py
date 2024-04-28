@@ -33,7 +33,7 @@ async def leave_review(message: [types.Message, types.CallbackQuery], state: FSM
     back_menu.add("🏠Вернуться в главное меню")
 
     if isinstance(message, types.Message):
-        await message.answer("<На шкале от 1 до 10,насколько вы готовы поделиться вашим мнением о вебинаре?",
+        await message.answer("На шкале от 1 до 10,насколько вы готовы поделиться вашим мнением о вебинаре?",
                              reply_markup=back_menu)
     elif isinstance(message, types.CallbackQuery):
         await message.message.answer("<b>1/5</b>\nНа шкале от 1 до 10,насколько вы готовы поделиться вашим мнением о вебинаре?",
