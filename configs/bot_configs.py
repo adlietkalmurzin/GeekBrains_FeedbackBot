@@ -9,7 +9,7 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 READYNESS_THRESHOLD = 3
 RELEVANT_SCORE_THRESHOLD = 3
 admin_password = "1234"
-
+student_password = '4321
 
 async def main_menu_message(message, message_text: str, user_type: int):
     """
