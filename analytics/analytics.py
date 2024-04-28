@@ -85,28 +85,47 @@ def get_specifically_pn_plot(specifically_object: int, in_percent: bool = False)
     plt.show()
 
 
-def get_all_obj_all_rew_plot(in_percent: bool = False):
+def get_all_obj_all_rew_plot(rew_type: int, in_percent: bool = False):
+    """
+    :param rew_type: 0 - негативные, 1 - положительные, 2 - все
+    :param in_percent: вернуть график отношения в процентах или нет
+    :return: график отношений
+    """
     plt.figure(figsize=(20, 12))
 
-    reviews_counts = df.groupby(['timestamp', 'object']).size().unstack(fill_value=0)
+    dff = df
+    if rew_type == 0:
+        dff = df[df['is_positive'] == 0]
+    elif rew_type == 1:
+        dff = df[df['is_positive'] == 1]
+
+    reviews_counts = dff.groupby(['timestamp', 'object']).size().unstack(fill_value=0)
     total_reviews = reviews_counts.sum(axis=1)
     reviews_percentages = reviews_counts.div(total_reviews, axis=0) * 100
-    if in_percent:
-        plt.bar(reviews_percentages.index, reviews_percentages[0], color='lightblue', label='Вебинары')
-        plt.bar(reviews_percentages.index, reviews_percentages[1], bottom=reviews_percentages[0], color='salmon', label='Материал')
-        plt.bar(reviews_percentages.index, reviews_percentages[2], bottom=reviews_percentages[0] + reviews_percentages[1], color='green', label='Преподаватели')
 
+    if in_percent:
+        plt.bar(range(len(reviews_percentages.index)), reviews_percentages[0], color='lightblue', label='Вебинары')
+        plt.bar(range(len(reviews_percentages.index)), reviews_percentages[1], bottom=reviews_percentages[0],
+                color='salmon', label='Материал')
+        plt.bar(range(len(reviews_percentages.index)), reviews_percentages[2],
+                bottom=reviews_percentages[0] + reviews_percentages[1], color='green', label='Преподаватели')
+
+        # Настраиваем метки оси x
+        plt.xticks(range(len(reviews_percentages.index)), reviews_percentages.index, rotation=45)
     else:
-        plt.bar(reviews_counts.index, reviews_counts[0], color='lightblue', label='Вебинары')
-        plt.bar(reviews_counts.index, reviews_counts[1], bottom=reviews_counts[0], color='salmon', label='Материал')
-        plt.bar(reviews_counts.index, reviews_counts[2], bottom=reviews_counts[0] + reviews_counts[1], color='green',
-                label='Преподаватели')
+        plt.bar(range(len(reviews_counts.index)), reviews_counts[0], color='lightblue', label='Вебинары')
+        plt.bar(range(len(reviews_counts.index)), reviews_counts[1], bottom=reviews_counts[0], color='salmon',
+                label='Материал')
+        plt.bar(range(len(reviews_counts.index)), reviews_counts[2], bottom=reviews_counts[0] + reviews_counts[1],
+                color='green', label='Преподаватели')
+
+        # Настраиваем метки оси x
+        plt.xticks(range(len(reviews_counts.index)), reviews_counts.index, rotation=45)
 
     # Настраиваем график
     plt.xlabel('Время')
     plt.ylabel(f'{"Процент" if in_percent else "Количество"} отзывов')
     plt.title('Отношение объектов по всем отзывам от времени')
-    plt.xticks(range(len(time_intervals)), time_intervals, rotation=45)
     plt.legend()
 
     # Отображаем график
@@ -114,23 +133,4 @@ def get_all_obj_all_rew_plot(in_percent: bool = False):
     plt.show()
 
 
-def plot_positive_or_negative_reviews_ratio(in_percent: bool = False):
-    plt.figure(figsize=(20, 12))
-    reviews_counts = df[df['is_relevant'] == 1].groupby(['timestamp', 'object']).size().unstack(fill_value=0)
-    total_reviews = reviews_counts.sum(axis=1)
-    reviews_percentages = reviews_counts.div(total_reviews, axis=0) * 100
-
-    if in_percent:
-        plt.bar(reviews_percentages.index, reviews_percentages[0], color='lightblue', label='Вебинары')
-        plt.bar(reviews_percentages.index, reviews_percentages[1], bottom=reviews_percentages[0], color='salmon', label='Материал')
-        plt.bar(reviews_percentages.index, reviews_percentages[2], bottom=reviews_percentages[0] + reviews_percentages[1], color='green', label='Преподаватели')
-
-    else:
-        plt.bar(reviews_counts.index, reviews_counts[0], color='lightblue', label='Вебинары')
-        plt.bar(reviews_counts.index, reviews_counts[1], bottom=reviews_counts[0], color='salmon', label='Материал')
-        plt.bar(reviews_counts.index, reviews_counts[2], bottom=reviews_counts[0] + reviews_counts[1], color='green',
-                label='Преподаватели')
-
-
-
-plot_positive_or_negative_reviews_ratio()
+get_all_obj_all_rew_plot(2)

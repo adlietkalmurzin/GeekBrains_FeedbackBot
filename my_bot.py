@@ -3,7 +3,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from configs.bot_configs import bot, dp, main_menu_message
 from database.db_session import get_user
-from interface.signup import admin_password_waiting, sign_up_student
+from interface.signup import admin_password_waiting, sign_up_student, student_password_waiting
 from interface.students_feedback import leave_review
 from interface.admin_get_analytics import get_analytics
 
@@ -29,8 +29,8 @@ async def start(message: types.Message):
 async def sign_up(message: types.Message, state: FSMContext):
     if message.text == '👨‍🏫Я админ':
         await admin_password_waiting(message, state)
-    else:
-        await sign_up_student(message, state)
+    elif message.text == '👨‍🎓Я студент':
+        await student_password_waiting(message, state)
 
 
 @dp.message_handler(text=['📊Получить аналитику'])
@@ -38,6 +38,6 @@ async def get_report(message: types.Message):
     await get_analytics(message)
 
 
-@dp.message_handler(text="Оставить отзыв")
+@dp.message_handler(text="✏️Оставить отзыв")
 async def feedback(message: types.Message, state: FSMContext):
     await leave_review(message, state)

@@ -5,7 +5,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram import types
 from aiogram.types import ReplyKeyboardRemove
 
-from configs.bot_configs import dp, main_menu_message, admin_password
+from configs.bot_configs import dp, main_menu_message, admin_password, student_password
 from database.db_session import send_user_to_base
 
 
@@ -15,17 +15,18 @@ class SignUpAdmin(StatesGroup):
 
 
 class SignUpStudent(StatesGroup):
+    password = State()
     name = State()
 
 
 async def admin_password_waiting(message: types.Message, state: FSMContext):
-    await message.answer("🔐<b>Подтвердите, что вы админ.</b>\n\n"
+    await message.answer("🔐<b>Подтвердите, что вы админ GeekBrains.</b>\n\n"
                          "Введите пароль:", reply_markup=ReplyKeyboardRemove())
     await state.set_state(SignUpAdmin.password)
 
 
 @dp.message_handler(state=SignUpAdmin.password)
-async def handle_teacher_password(message: types.Message, state: FSMContext):
+async def handle_admin_password(message: types.Message, state: FSMContext):
     if message.text == admin_password:
         await sign_up_admin(message, state)
     else:
@@ -51,6 +52,21 @@ async def admin_su(message: types.Message, state: FSMContext):
 
         await main_menu_message(message, f'👋Здравствуйте, {first_name} {last_name},\n Вы успешно зарегистрировались', 1)
         await state.finish()
+
+
+async def student_password_waiting(message: types.Message, state: FSMContext):
+    await message.answer("🔐<b>Подтвердите, что вы студент Geek Brains.</b>\n\n"
+                         "Введите пароль:", reply_markup=ReplyKeyboardRemove())
+    await state.set_state(SignUpStudent.password)
+
+
+@dp.message_handler(state=SignUpStudent.password)
+async def handle_student_password(message: types.Message, state: FSMContext):
+    if message.text == student_password:
+        await sign_up_student(message, state)
+    else:
+        await student_password_waiting(message, state)
+        await message.answer("❌<b>Неправильный пароль.</b> Попробуйте ещё раз.")
 
 
 async def sign_up_student(message: types.Message, state: FSMContext):
